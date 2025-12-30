@@ -16,7 +16,7 @@ export default function EmotionChatbot({ currentEmotion, isOpen, onClose }) {
   const [followUpQuestions, setFollowUpQuestions] = useState([])
   const messagesEndRef = useRef(null)
 
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+  const API_URL = import.meta.env.VITE_API_URL || ''
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })

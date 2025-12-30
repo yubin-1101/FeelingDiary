@@ -1,5 +1,5 @@
-// 백엔드 API 엔드포인트
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+// 백엔드 API 엔드포인트 (상대 경로 사용 - Netlify Functions와 호환)
+const API_URL = import.meta.env.VITE_API_URL || ''
 
 // 감정 분석 함수
 export const analyzeEmotion = async (diaryContent) => {

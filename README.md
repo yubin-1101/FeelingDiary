@@ -34,8 +34,8 @@ npm install
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
 
-# 백엔드 API URL
-VITE_API_URL=http://localhost:3001
+# 백엔드 API URL (Netlify에선 공란으로 두어 상대 경로 사용)
+VITE_API_URL=
 
 # OpenAI API Key (https://platform.openai.com/api-keys)
 OPENAI_API_KEY=sk-proj-...
