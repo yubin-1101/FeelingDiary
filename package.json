@@ -5,8 +5,9 @@
   "type": "module",
   "description": "AI-powered emotion tracking diary with OpenAI and Supabase",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client": "vite",
+    "server": "node server/index.js",
     "build": "vite build",
     "preview": "vite preview"
   },
