@@ -8,6 +8,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
   const [message, setMessage] = useState('')
+  const TEST_EMAIL = import.meta.env.VITE_TEST_EMAIL || 'test@example.com'
+  const TEST_PASSWORD = import.meta.env.VITE_TEST_PASSWORD || 'testpassword'
 
   const handleAuth = async (e) => {
     e.preventDefault()
@@ -74,6 +76,60 @@ export default function LoginPage() {
       } else {
         setMessage(`❌ ${error.message || '오류가 발생했습니다.'}`)
       }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleTestLogin = async () => {
+    setLoading(true)
+    setMessage('')
+
+    if (!supabase) {
+      setMessage('❌ Supabase가 구성되어 있지 않습니다.')
+      setLoading(false)
+      return
+    }
+
+    try {
+      // 1) 먼저 로그인 시도
+      let { data, error } = await supabase.auth.signInWithPassword({
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      })
+
+      // 2) 로그인 실패가 "Invalid login credentials" 면 사용자 생성(가입) 시도
+      if (error && error.message && error.message.toLowerCase().includes('invalid login')) {
+        console.log('테스트 계정이 없어 signUp 시도합니다.')
+        const signUpRes = await supabase.auth.signUp({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD,
+        })
+
+        if (signUpRes.error) {
+          throw new Error(signUpRes.error.message)
+        }
+
+        // signUp 이후 즉시 세션이 없을 수 있으므로 다시 signIn 시도
+        const signInAgain = await supabase.auth.signInWithPassword({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD,
+        })
+
+        data = signInAgain.data
+        error = signInAgain.error
+      }
+
+      if (error) throw new Error(error.message)
+
+      if (data?.session) {
+        setMessage('✅ 테스트 계정으로 로그인 성공!')
+      } else {
+        setMessage('✅ 로그인 시도 완료. 세션을 확인해주세요. (프로젝트에서 이메일 확인이 필요할 수 있습니다)')
+      }
+    } catch (error) {
+      console.error('Test Login Error:', error)
+      setMessage(`❌ ${error.message || '테스트 로그인에 실패했습니다.'}`)
     } finally {
       setLoading(false)
     }
@@ -172,6 +228,15 @@ export default function LoginPage() {
                 처리 중...
               </span>
             ) : isSignUp ? '✨ 회원가입' : '💜 로그인'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleTestLogin}
+            disabled={loading}
+            className="btn-secondary w-full text-lg py-4 mt-3"
+          >
+            {loading ? '처리 중...' : '🔑 테스트 계정으로 로그인'}
           </button>
 
           <div className="text-center pt-2">
